@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  mongodb_users:
+    image: mongo
+    volumes:
+      - mongodb_users_volume:/data/db
+      # - mongodb_volume:/data/db
+    ports:
+      - 27011:27017
+
+  mongodb_products:
+    image: mongo
+    volumes:
+      - mongodb_products_volume:/data/db
+    ports:
+      - 27012:27017
+
+
+  mongodb_orders:
+    image: mongo
+    volumes:
+      - mongodb_orders_volume:/data/db
+    ports:
+      - 27013:27017
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_volume:/data
+
+
+  nest_users:
+    image: node:alpine
+    ports:
+      - 8811:8811
+      - 8812:8812
+    volumes:
+      - ./nest_users:/app
+      - nest_users_volume:/app/node_modules
+    working_dir: /app
+    command: >
+      sh -c "
+        npm i
+        npm start
+      "
+
+  nest_products:
+    image: node:alpine
+    ports:
+      - 8821:8821
+      - 8822:8822
+    volumes:
+      - ./nest_products:/app
+      - nest_products_volume:/app/node_modules
+    working_dir: /app
+    command: >
+      sh -c "
+        npm i
+        npm start
+      "
+
+  nest_orders:
+    image: node:alpine
+    ports:
+      - 8831:8831
+      - 8832:8832
+    volumes:
+      - ./nest_orders:/app
+      - nest_orders_volume:/app/node_modules
+    working_dir: /app
+    command: >
+      sh -c "
+        npm i
+        npm start
+      "
+
+
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/certss:/app
+    ports:
+      - 80:80
+      - 443:443
+
+  next_magazin:
+    image: node:alpine
+    ports:
+      - 3333:3333
+      # - 443:3333
+    volumes:
+      - ./next_magazin:/app
+      - next_magazin_volume:/app/node_modules
+    working_dir: /app
+    command: >
+      sh -c "
+        npm i
+        # npm run dev
+        npm run build
+        npm start
+      "
+
+volumes:
+  # mongodb_volume:
+  mongodb_users_volume:
+  mongodb_products_volume:
+  mongodb_orders_volume:
+  redis_volume:
+  nest_users_volume:
+  nest_products_volume:
+  nest_orders_volume:
+  next_magazin_volume:
+
